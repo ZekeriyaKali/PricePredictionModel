@@ -5,13 +5,14 @@ from sqlalchemy import create_engine, text
 
 app = Flask(__name__)
 
-server = "localhost"
+server = "localhost\\MSSQLLocalDB"
 database = "DriveList"
-username = "(localdb)\MSSQLLocalDB"
-password = ""
 driver = "ODBC Driver 17 for SQL Server"
 
-connection_string = f"mssql+pyodbc://{username}:{password}@{server}/{database}?driver={driver}"
+connection_string = (
+    "mssql+pyodbc://@localhost\\MSSQLLocalDB?"
+    "driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes&database=DriveList"
+)
 engine = create_engine(connection_string)
 
 # Eğittiğin model dosyasını yükle
