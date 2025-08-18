@@ -1,17 +1,23 @@
 from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
+import pyodbc
 from sqlalchemy import create_engine, text
 
 app = Flask(__name__)
+
+conn = pyodbc.connect(
+    r'Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\MSSQLLocalDB;Database=DriveList;Trusted_Connection=yes;'
+)
+print("Bağlantı başarılı!")
 
 server = "localhost\\MSSQLLocalDB"
 database = "DriveList"
 driver = "ODBC Driver 17 for SQL Server"
 
 connection_string = (
-    "mssql+pyodbc://@localhost\\MSSQLLocalDB?"
-    "driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes&database=DriveList"
+    "mssql+pyodbc://localhost/DriveList"
+    "?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
 )
 engine = create_engine(connection_string)
 
