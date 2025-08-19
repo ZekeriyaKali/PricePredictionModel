@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
 import pyodbc
-import urllib
+import urllib # Get encode from URL
 from sqlalchemy import create_engine, text
 
 app = Flask(__name__)
@@ -25,7 +25,7 @@ engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 try:
     with engine.connect() as conn:
         result = conn.execute(text("SELECT 1"))
-        print("✅ Bağlantı başarılı:", result.scalar())
+        print("✅ Bağlantı başarılı:", result.scalar())  #sqlalchemy connection test
 except Exception as e:
     print("❌ Bağlantı hatası:", e)
 
