@@ -11,15 +11,18 @@ conn = pyodbc.connect(
 )
 print("Bağlantı başarılı!")
 
-server = "localhost\\MSSQLLocalDB"
-database = "DriveList"
-driver = "ODBC Driver 17 for SQL Server"
-
 connection_string = (
-    "mssql+pyodbc://localhost/DriveList"
+    "mssql+pyodbc://@localhost\\MSSQLLocalDB/DriveList"
     "?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
 )
 engine = create_engine(connection_string)
+
+try:
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT 1"))
+        print("✅ Bağlantı başarılı:", result.scalar())
+except Exception as e:
+    print("❌ Bağlantı hatası:", e)
 
 # Eğittiğin model dosyasını yükle
 model = joblib.load('car_price_model.pkl')  # Örnek model dosyan
