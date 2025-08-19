@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
@@ -56,8 +58,8 @@ def predict():
     # 📌 Veritabanına kaydet
     with engine.begin() as conn:
         query = text("""
-               INSERT INTO Predictions (Brand, Model, Year, Km, GearType, FuelType, City, PredictedPrice)
-               VALUES (:Brand, :Model, :Year, :Km, :GearType, :FuelType, :City, :PredictedPrice)
+               INSERT INTO Predictions (Brand, Model, Year, Km, GearType, FuelType, City, PredictedPrice,CreatedAt)
+               VALUES (:Brand, :Model, :Year, :Km, :GearType, :FuelType, :City, :PredictedPrice, :CreatedAt)
            """)
         conn.execute(query, {
             "Brand": df["Brand"][0],
@@ -67,7 +69,8 @@ def predict():
             "GearType": df["GearType"][0],
             "FuelType": df["FuelType"][0],
             "City": df["City"][0],
-            "PredictedPrice": float(prediction)
+            "PredictedPrice": float(prediction),
+            "CreatedAt": datetime.now()
         })
 
     return jsonify({'PricePrediction': round(prediction, 2)})
