@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
 import pyodbc
+import urllib
 from sqlalchemy import create_engine, text
 
 app = Flask(__name__)
@@ -12,10 +13,14 @@ conn = pyodbc.connect(
 print("Bağlantı başarılı!")
 
 connection_string = (
-    "mssql+pyodbc://@localhost\\MSSQLLocalDB/DriveList"
-    "?driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=(localdb)\\MSSQLLocalDB;"
+    "Database=DriveList;"
+    "Trusted_Connection=yes;"
 )
-engine = create_engine(connection_string)
+params = urllib.parse.quote_plus(connection_string)
+
+engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
 
 try:
     with engine.connect() as conn:
