@@ -1,24 +1,23 @@
 from flask import Flask, request, jsonify
+import joblib
 
 app = Flask(__name__)
 
+# Modeli yükle
+model = joblib.load("fault_model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
+
 @app.route("/diagnose", methods=["POST"])
 def diagnose():
-    description = request.form.get("description")  # metin
-    audio = request.files.get("audio")            # ses dosyası
-    image = request.files.get("image")            # resim
+    description = request.form.get("description")
 
-    # Buraya AI model entegrasyonu eklenecek
-    result = "Arıza analizi yapıldı. Test cevabı: "
-    if description:
-        result += f"Metin: {description}. "
-    if audio:
-        result += f"Ses dosyası alındı: {audio.filename}. "
-    if image:
-        result += f"Görüntü dosyası alındı: {image.filename}. "
+    if not description:
+        return jsonify({"error": "Lütfen bir açıklama girin"}), 400
 
-    return jsonify({"diagnosis": result})
+    X = vectorizer.transform([description])
+    prediction = model.predict(X)[0]
+
+    return jsonify({"diagnosis": f"Tespit edilen sorun: {prediction}"})
 
 if __name__ == "__main__":
-    # Servisi http://localhost:5001 üzerinde çalıştırır
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(port=5001, debug=True)
