@@ -1,4 +1,31 @@
 ﻿description;issue
-Vites değiştirirken ses geliyor;Debriyaj problemi
-Motor çalışırken titreme var;Motor ateşleme sorunu
-Egzozdan siyah duman çıkıyor;Yakıt enjektörü arızası
+Vites değiştirirken ses geliyor;Debriyaj balatası aşınmış ve değişmesi gerekiyor
+Motor çalışırken titreme var;Motor ateşleme bobininde arıza tespit edildi ve değiştirilmesi önerilir
+Egzozdan siyah duman çıkıyor;Yakıt enjektörleri fazla yakıt püskürtüyor temizlenmeli veya değiştirilmeli
+Araç yüksek hızda sallanıyor;Rot balans ayarı bozuk lastik dengesi yapılmalı
+Fren yaparken gıcırtı duyuluyor;Fren balataları aşınmış balataların ve disklerin değişmesi gerekiyor
+Araç geç çalışıyor;Akü zayıflamış akü testi sonrası yenisi ile değiştirilmesi gerekir
+Yolda giderken aniden stop etti;Yakıt pompası arızalı pompa değiştirilmeli
+Direksiyon dönerken zorlanıyor;Hidrolik direksiyon pompası arızalı revizyon veya değişim yapılmalı
+Klimadan sıcak hava geliyor;Klima gazı bitmiş gaz basılmalı ve kaçak testi yapılmalı
+Araba rampada çekişten düşüyor;Turbo basıncı düşük turbonun kontrol edilmesi ve gerekirse revizyon yapılması gerekir
+Egzozdan beyaz duman çıkıyor;Silindir kapak contası yanmış conta ve soğutma sistemi onarılmalı
+Motor hararet yapıyor;Radyatörde su kaçağı mevcut radyatör tamir edilmeli veya değiştirilmeli
+Lastikler çabuk aşınıyor;Rot ayarı bozuk ön takım kontrol edilerek ayar yapılmalı
+Hızlanırken araç titriyor;Şanzıman kavrama balatası aşınmış değiştirilmesi gerekiyor
+Yolda giderken metal sürtme sesi geliyor;Fren diskleri eğilmiş veya yamulmuş disklerin değişmesi gerekir
+Farlar zayıf yanıyor;Elektrik tesisatında voltaj düşüklüğü var alternatör ve kablolar kontrol edilmeli
+Gaza basınca geç tepki veriyor;Enjektörler kirlenmiş ultrasonik temizlik yapılmalı
+Yolda giderken direksiyon titriyor;Rot başları gevşemiş ön takım parçaları değiştirilmeli
+Fren pedalı çok sert;Fren hidrolik yağında problem var hidrolik sistemi hava yapmış olabilir
+Korna çalışmıyor;Elektrik sigortası yanmış veya kablo kopmuş sigorta değiştirilmeli
+Araba geri vitese geçmiyor;Otomatik şanzıman valf gövdesinde arıza var şanzıman servisine yönlendirilmeli
+Kaputtan tıkırtı sesi geliyor;Triger kayışı gevşemiş kayış ve gergi bilyaları değiştirilmeli
+Araç yüksek devirde stop ediyor;Benzin filtresi tıkalı yakıt hattı temizlenmeli
+Klimadan kötü koku geliyor;Polen filtresi kirli ve klima bakteri temizliği yapılmalı
+Motor yağı çabuk eksiliyor;Yağ keçelerinde kaçak mevcut keçeler ve conta değiştirilmeli
+Araba hızlanmıyor;Turbo hortumu yırtılmış hortum yenilenmeli
+Direksiyon boşluk yapıyor;Direksiyon kutusu aşınmış kutu revizyon edilmeli
+Fren lambası sürekli yanıyor;Fren müşürü arızalı müşür değiştirilmeli
+Araba çalışırken uğultu yapıyor;Alternatör rulmanı bozulmuş rulman değişimi yapılmalı
+Egzozdan mavi duman çıkıyor;Segmanlar aşınmış motor revizyonu gerekli

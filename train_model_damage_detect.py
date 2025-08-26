@@ -6,8 +6,9 @@ from sklearn.metrics import classification_report
 import joblib
 
 # 1. Veriyi yükle
-df = pd.read_csv("car_faults.csv")
-
+df = pd.read_csv("car_faults.csv",delimiter=";")
+print(df.head())
+print(df.columns)
 # 2. Train-test ayır
 X_train, X_test, y_train, y_test = train_test_split(
     df["description"], df["issue"], test_size=0.2, random_state=42
