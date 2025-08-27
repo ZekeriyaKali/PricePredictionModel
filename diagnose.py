@@ -17,7 +17,7 @@ def diagnose():
     X = vectorizer.transform([description])
     prediction = model.predict(X)[0]
 
-    return jsonify({"diagnosis": f"Tespit edilen sorun: {prediction}"})
+    return jsonify({"diagnosis": prediction})
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
