@@ -1,7 +1,14 @@
 from flask import Flask, request, jsonify
 import joblib
+import os
+from datetime import datetime
 
 app = Flask(__name__)
+
+# Upload klasörleri
+os.makedirs("uploads/audio", exist_ok=True)
+os.makedirs("uploads/images", exist_ok=True)
+
 
 # Modeli yükle
 model = joblib.load("fault_model.pkl")
@@ -13,26 +20,36 @@ def diagnose():
     audio = request.files.get("audio")
     image = request.files.get("image")
 
-    if not description and not audio and not image:
-        return jsonify({"error": "Lütfen en az bir veri girin"}), 400
+    results = {}
 
-    result_parts = []
-
-    # Text analizi
+    # ✅ Text analizi
     if description:
         X = vectorizer.transform([description])
         prediction = model.predict(X)[0]
-        result_parts.append(f"Metin analizi sonucu: {prediction}")
+        results["diagnosis"] = prediction
+    else:
+        results["diagnosis"] = "Metin girişi yok"
 
-    # Ses dosyası işleme (örnek placeholder)
+    # ✅ Ses dosyasını kaydet
     if audio:
-        result_parts.append(f"Ses dosyası alındı: {audio.filename}")
+        filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + audio.filename
+        filepath = os.path.join("uploads/audio", filename)
+        audio.save(filepath)
+        results["audio_file"] = filepath
+    else:
+        results["audio_file"] = None
 
-    # Resim dosyası işleme (örnek placeholder)
+    # ✅ Resim dosyasını kaydet
     if image:
-        result_parts.append(f"Resim alındı: {image.filename}")
+        filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + image.filename
+        filepath = os.path.join("uploads/images", filename)
+        image.save(filepath)
+        results["image_file"] = filepath
+    else:
+        results["image_file"] = None
 
-    return jsonify({"diagnosis": " | ".join(result_parts)})
+    return jsonify(results)
+
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
