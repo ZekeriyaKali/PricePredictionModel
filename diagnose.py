@@ -1,18 +1,20 @@
 from flask import Flask, request, jsonify
-import joblib
-import os
+import joblib, os, json
 from datetime import datetime
+from image_inference import run_image_detection
+from audio_inference import run_audio_detection
+# text model
+import pickle
+import numpy as np
 
 app = Flask(__name__)
-
-# Upload klasörleri
 os.makedirs("uploads/audio", exist_ok=True)
 os.makedirs("uploads/images", exist_ok=True)
+os.makedirs("uploads/annotated", exist_ok=True)
 
-
-# Modeli yükle
-model = joblib.load("fault_model.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
+# load text model
+text_model = joblib.load("models/fault_model.pkl")
+vectorizer = joblib.load("models/vectorizer.pkl")
 
 @app.route("/diagnose", methods=["POST"])
 def diagnose():
@@ -20,36 +22,51 @@ def diagnose():
     audio = request.files.get("audio")
     image = request.files.get("image")
 
-    results = {}
+    response = {
+        "text": None,
+        "audio": None,
+        "image": None,
+        "annotated_image": None
+    }
 
-    # ✅ Text analizi
+    # TEXT
     if description:
         X = vectorizer.transform([description])
-        prediction = model.predict(X)[0]
-        results["diagnosis"] = prediction
-    else:
-        results["diagnosis"] = "Metin girişi yok"
+        pred = text_model.predict(X)[0]
+        response["text"] = {"label": pred, "advice": "Metin tabanlı öneri (detaylı harita yazılabilir)"}
 
-    # ✅ Ses dosyasını kaydet
+    # AUDIO
     if audio:
-        filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + audio.filename
-        filepath = os.path.join("uploads/audio", filename)
-        audio.save(filepath)
-        results["audio_file"] = filepath
-    else:
-        results["audio_file"] = None
+        # save audio
+        audio_filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + audio.filename
+        audio_path = os.path.join("uploads/audio", audio_filename)
+        audio.save(audio_path)
+        audio_result = run_audio_detection(audio_path)
+        response["audio"] = {"file": audio_path, **audio_result}
 
-    # ✅ Resim dosyasını kaydet
+    # IMAGE
     if image:
-        filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + image.filename
-        filepath = os.path.join("uploads/images", filename)
-        image.save(filepath)
-        results["image_file"] = filepath
-    else:
-        results["image_file"] = None
+        img_filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + image.filename
+        img_path = os.path.join("uploads/images", img_filename)
+        image.save(img_path)
+        detections, annotated_path = run_image_detection(img_path)
+        response["image"] = {"file": img_path, "detections": detections}
+        response["annotated_image"] = annotated_path
 
-    return jsonify(results)
+    # combine logic (basit - örnek)
+    # ör: eğer image detection "hose_tear" varsa öncelik ver
+    final_recommendations = []
+    if response["image"] and response["image"]["detections"]:
+        for d in response["image"]["detections"]:
+            final_recommendations.append(f"{d['title']}: {d['advice']}")
+    if response["audio"]:
+        final_recommendations.append(f"{response['audio']['title']}: {response['audio']['advice']}")
+    if response["text"]:
+        final_recommendations.append(f"Text result: {response['text']['label']}")
 
+    response["final_recommendations"] = final_recommendations
+
+    return jsonify(response)
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
