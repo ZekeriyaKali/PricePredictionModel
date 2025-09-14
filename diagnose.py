@@ -1,20 +1,31 @@
 from flask import Flask, request, jsonify
-import joblib, os, json
+import os
+import joblib
 from datetime import datetime
+from werkzeug.utils import secure_filename
+
+# Model importları
 from image_inference import run_image_detection
 from audio_inference import run_audio_detection
+
 # text model
-import pickle
 import numpy as np
 
 app = Flask(__name__)
-os.makedirs("uploads/audio", exist_ok=True)
-os.makedirs("uploads/images", exist_ok=True)
-os.makedirs("uploads/annotated", exist_ok=True)
 
-# load text model
-text_model = joblib.load("models/fault_model.pkl")
-vectorizer = joblib.load("models/vectorizer.pkl")
+# Klasörlerin oluşturulması
+UPLOAD_DIRS = ["uploads/audio", "uploads/images", "uploads/annotated"]
+for d in UPLOAD_DIRS:
+    os.makedirs(d, exist_ok=True)
+
+# Text model ve vectorizer yükle
+try:
+    text_model = joblib.load("models/fault_model.pkl")
+    vectorizer = joblib.load("models/vectorizer.pkl")
+except Exception as e:
+    print(f"⚠️ Text model yüklenemedi: {e}")
+    text_model, vectorizer = None, None
+
 
 @app.route("/diagnose", methods=["POST"])
 def diagnose():
@@ -26,47 +37,57 @@ def diagnose():
         "text": None,
         "audio": None,
         "image": None,
-        "annotated_image": None
+        "annotated_image": None,
+        "final_recommendations": []
     }
 
-    # TEXT
-    if description:
-        X = vectorizer.transform([description])
-        pred = text_model.predict(X)[0]
-        response["text"] = {"label": pred, "advice": "Metin tabanlı öneri (detaylı harita yazılabilir)"}
+    try:
+        # TEXT ANALYSIS
+        if description and text_model and vectorizer:
+            X = vectorizer.transform([description])
+            pred = text_model.predict(X)[0]
+            response["text"] = {
+                "label": pred,
+                "advice": "Metin tabanlı öneri (ör: servise götürün, şu parçayı kontrol edin...)"
+            }
 
-    # AUDIO
-    if audio:
-        # save audio
-        audio_filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + audio.filename
-        audio_path = os.path.join("uploads/audio", audio_filename)
-        audio.save(audio_path)
-        audio_result = run_audio_detection(audio_path)
-        response["audio"] = {"file": audio_path, **audio_result}
+        # AUDIO ANALYSIS
+        if audio:
+            audio_filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + secure_filename(audio.filename)
+            audio_path = os.path.join("uploads/audio", audio_filename)
+            audio.save(audio_path)
 
-    # IMAGE
-    if image:
-        img_filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + image.filename
-        img_path = os.path.join("uploads/images", img_filename)
-        image.save(img_path)
-        detections, annotated_path = run_image_detection(img_path)
-        response["image"] = {"file": img_path, "detections": detections}
-        response["annotated_image"] = annotated_path
+            audio_result = run_audio_detection(audio_path)
+            response["audio"] = {"file": audio_path, **audio_result}
 
-    # combine logic (basit - örnek)
-    # ör: eğer image detection "hose_tear" varsa öncelik ver
-    final_recommendations = []
-    if response["image"] and response["image"]["detections"]:
-        for d in response["image"]["detections"]:
-            final_recommendations.append(f"{d['title']}: {d['advice']}")
-    if response["audio"]:
-        final_recommendations.append(f"{response['audio']['title']}: {response['audio']['advice']}")
-    if response["text"]:
-        final_recommendations.append(f"Text result: {response['text']['label']}")
+        # IMAGE ANALYSIS
+        if image:
+            img_filename = datetime.now().strftime("%Y%m%d_%H%M%S_") + secure_filename(image.filename)
+            img_path = os.path.join("uploads/images", img_filename)
+            image.save(img_path)
 
-    response["final_recommendations"] = final_recommendations
+            detections, annotated_path = run_image_detection(img_path)
+            response["image"] = {"file": img_path, "detections": detections}
+            response["annotated_image"] = annotated_path
+
+        # FINAL RECOMMENDATIONS
+        if response["image"] and response["image"].get("detections"):
+            for d in response["image"]["detections"]:
+                response["final_recommendations"].append(f"{d['title']}: {d['advice']}")
+
+        if response["audio"]:
+            response["final_recommendations"].append(
+                f"{response['audio'].get('title', 'Audio')} : {response['audio'].get('advice', '')}"
+            )
+
+        if response["text"]:
+            response["final_recommendations"].append(f"Text result: {response['text']['label']}")
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     return jsonify(response)
+
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
