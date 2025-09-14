@@ -1,12 +1,12 @@
 import librosa
 import numpy as np
-from tensorflow.keras.models import load_model
+import tensorflow as tf
 import json
 from datetime import datetime
 import os
 import soundfile as sf
 
-audio_model = load_model("models/audio_model.h5")
+audio_model = tf.keras.models.load_model("models/audio_model.h5")
 with open("models/audio_classes.json","r") as f:
     class_to_idx = json.load(f)
 idx_to_class = {v:k for k,v in class_to_idx.items()}
