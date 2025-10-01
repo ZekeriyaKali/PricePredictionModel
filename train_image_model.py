@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader  # Mini-batch data loader için
 #   hortum_delik/
 # -------------------------
 
-DATASET_PATH = "image_dataset"  # Eğitim verisinin bulunduğu klasör
+DATASET_PATH = "image_detect/images"  # Eğitim verisinin bulunduğu klasör
 BATCH_SIZE = 16  # Her iterasyonda işlenecek örnek sayısı
 EPOCHS = 5  # Eğitimde kaç epoch (tüm veri seti üzerinden geçiş) yapılacağı
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
