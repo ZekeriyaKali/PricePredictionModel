@@ -30,7 +30,7 @@ Each model is trained separately and saved for later use in production.
 
 ## Project Structure
 
-ml/
+```
 ├── train_car_price_model.py
 ├── train_text_model.py
 ├── train_image_model.py
@@ -39,16 +39,16 @@ ml/
 ├── car_faults.csv
 │
 ├── image_dataset/
-│ ├── normal/
-│ ├── kablo_cikmis/
-│ └── hortum_delik/
+│   ├── normal/
+│   ├── kablo_cikmis/
+│   └── hortum_delik/
 │
 ├── car_price_model.pkl
 ├── fault_model.pkl
 ├── vectorizer.pkl
 └── image_model.pth
+```
 
----
 
 ## 1. Vehicle Price Prediction Model
 
