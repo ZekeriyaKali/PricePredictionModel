@@ -196,6 +196,3 @@ This module is developed as part of a full-stack AI-powered system to demonstrat
 
 ---
 
-## Developer
-
-Your Name
